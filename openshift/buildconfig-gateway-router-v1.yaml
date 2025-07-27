@@ -1,28 +1,26 @@
 ﻿kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: gateway-router-v1
+  name: gateway-router
   labels:
-    app: gateway-router-v1
+    app: gateway-router
 spec:
   nodeSelector: null
   output:
     to:
       kind: ImageStreamTag
-      name: 'gateway-router:v1'
+      name: 'gateway-router:latest'
   resources: {}
   successfulBuildsHistoryLimit: 5
   failedBuildsHistoryLimit: 5
   strategy:
     type: Docker
     dockerStrategy:
-      pullSecret:
-        name: ecpregistry-sys-test-dockercfg
   postCommit: {}
   source:
     type: Dockerfile
     dockerfile: |
-      FROM ecpregistry-sys-test.ehitd.ehalsomyndigheten.se/build/openjdk-21:1.18-1
+      FROM registry.redhat.io/ubi8/openjdk-21:1.21-2.1752676423
 
       ENV LANGUAGE="sv_SE:sv"
 

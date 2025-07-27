@@ -23,6 +23,8 @@
         <spring-cloud.version>2023.0.2</spring-cloud.version>
     </properties>
 
+    <repositories>
+         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
@@ -71,7 +73,12 @@
     </dependencyManagement>
 
     <build>
-        <plugins>
+	<plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+             <version>3.14.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
