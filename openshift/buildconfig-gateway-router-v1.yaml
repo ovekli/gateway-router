@@ -1,0 +1,40 @@
+﻿kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: gateway-router-v1
+  labels:
+    app: gateway-router-v1
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'gateway-router:v1'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Docker
+    dockerStrategy:
+      pullSecret:
+        name: ecpregistry-sys-test-dockercfg
+  postCommit: {}
+  source:
+    type: Dockerfile
+    dockerfile: |
+      FROM ecpregistry-sys-test.ehitd.ehalsomyndigheten.se/build/openjdk-21:1.18-1
+
+      ENV LANGUAGE="sv_SE:sv"
+
+      COPY --chown=185 target/*.jar /deployments/
+
+      EXPOSE 8081
+      EXPOSE 8989
+      USER 185
+
+      ENV JAVA_APP_JAR="/deployments/*.jar"
+
+      ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+  runPolicy: Serial
+status:
+  lastVersion: 8

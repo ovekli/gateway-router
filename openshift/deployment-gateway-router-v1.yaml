@@ -1,0 +1,63 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: gateway-router-v1
+  labels:
+    app: gateway-router-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway-router-v1
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gateway-router-v1
+        deployment: gateway-router-v1
+    spec:
+      volumes:
+        - name: gateway-router-v1
+          configMap:
+            name: gateway-router-v1
+            defaultMode: 420
+        - name: app-jks
+          configMap:
+            name: app-jks
+            defaultMode: 420
+      containers:
+          name: gateway-router-v1
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 10
+          env:
+            - name: TZ
+              value: Europe/Stockholm
+            - name: LANG
+              value: sv_SE.utf8
+            - name: JAVA_OPTS_APPEND
+              value: '-Djboss.bind.address=0.0.0.0 -Dspring.config.location=file:/home/default/resource/application.yml -Djavax.net.ssl.trustStore=/home/default/jks/ehmcacerts'
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: gateway-router-v1
+              mountPath: /home/default/resource
+          terminationMessagePolicy: File
+          image: 'ecpregistry-utv.ehitd.ehalsomyndigheten.se/tekniklyft-ecp/gateway-router:1.0.0-1'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 0
+  progressDeadlineSeconds: 600

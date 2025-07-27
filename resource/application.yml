@@ -1,0 +1,26 @@
+server:
+  port: 8081
+spring:
+  cloud:
+    gateway:
+      routes:
+        - uri: ${referens.new.url}/referens/apisp/VerifieraLOA**/V1
+          predicates:
+            - Path=/referens/apisp/VerifieraLOA**/V1
+        - uri: ${referens.old.url}/referens/apisp/VerifieraRoll**/V1
+          predicates:
+            - Path=/referens/apisp/VerifieraRoll**/V1
+logging:
+  level:
+    root: INFO
+    sun:
+      rmi: INFO
+    javax:
+      management:
+        remote:
+          rmi: INFO
+referens:
+  new:
+    url: http://localhost:8080
+  old:
+    url: http://localhost:8080
