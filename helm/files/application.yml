@@ -13,11 +13,11 @@ spring:
       routes:
         - uri: ${quarkus.headless.url}
           predicates:
-            - Path=/hello-resteasy
+            - Path=/hello
 logging:
   level:
     root: DEBUG
 
 quarkus:
   headless:
-     url:  lb://code-with-quarkus-headless
+     url:  lb://quarkus-test-headless
