@@ -1,0 +1,38 @@
+﻿kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: '{{ .Release.Name }}:latest'
+  resources: {}
+  successfulBuildsHistoryLimit: 5
+  failedBuildsHistoryLimit: 5
+  strategy:
+    type: Docker
+    dockerStrategy:
+  postCommit: {}
+  source:
+    type: Dockerfile
+    dockerfile: |
+      FROM registry.redhat.io/ubi8/openjdk-21:1.21-2.1752676423
+
+      ENV LANGUAGE="sv_SE:sv"
+
+      COPY --chown=185 target/*.jar /deployments/
+
+      EXPOSE 8081
+      EXPOSE 8989
+      USER 185
+
+      ENV JAVA_APP_JAR="/deployments/*.jar"
+
+      ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+  runPolicy: Serial
+status:
+  lastVersion: 8

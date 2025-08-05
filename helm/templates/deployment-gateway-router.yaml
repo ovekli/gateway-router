@@ -2,29 +2,29 @@
 apiVersion: apps/v1
 metadata:
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gateway-router:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"gateway-router\")].image"}]'
-  name: gateway-router
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"{{ .Release.Name }}:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"{{ .Release.Name }}\")].image"}]'
+  name: {{ .Release.Name }}
   labels:
-    app: gateway-router
+    app: {{ .Release.Name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gateway-router
+      app: {{ .Release.Name }}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: gateway-router
-        deployment: gateway-router
+        app: {{ .Release.Name }}
+        deployment: {{ .Release.Name }}
     spec:
       volumes:
-        - name: gateway-router
+        - name: {{ .Release.Name }}
           configMap:
-            name: gateway-router
+            name: {{ .Release.Name }}
             defaultMode: 420
       containers:
-        - name: gateway-router
+        - name: {{ .Release.Name }}
           env:
             - name: TZ
               value: Europe/Stockholm
@@ -38,10 +38,10 @@ spec:
               protocol: TCP
           imagePullPolicy: IfNotPresent
           volumeMounts:
-            - name: gateway-router
+            - name: {{ .Release.Name }}
               mountPath: /home/default/resource
           terminationMessagePolicy: File
-          image: 'image-registry.openshift-image-registry.svc:5000/test-headless/gateway-router'
+          image: 'image-registry.openshift-image-registry.svc:5000/{{ .Release.Namespace }}/{{ .Release.Name }}'
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
