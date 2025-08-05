@@ -1,0 +1,6 @@
+kind: ImageStream
+metadata:
+  name:  {{ .Release.Name }}
+spec:
+  lookupPolicy:
+    local: false
