@@ -12,11 +12,9 @@ spring:
       httpclient:
         connect-timeout: 250
       routes:
-
-        ## HELLO URI
         - uri: ${quarkus.headless.url}
           predicates:
-            - Path=/hello
+            - Path=/api/{*segments}
           filters:
 #            - name: Retry
 #              args:
@@ -31,29 +29,12 @@ spring:
             - name: CircuitBreaker
               args:
                 name: helloCircuitBreaker
-                fallbackUri: forward:/fallback/hello
+                fallbackUri: forward:/fallback/api/{segments}
                 statusCodes:
                   - "BAD_GATEWAY"
         - uri: ${quarkus.fallback.url}
           predicates:
-            - Path=/fallback/hello
-          filters:
-            - StripPrefix=1
-
-        ## WORLD URI
-        - uri: ${quarkus.headless.url}
-          predicates:
-            - Path=/world
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: worldCircuitBreaker
-                fallbackUri: forward:/fallback/world
-                statusCodes:
-                  - "BAD_GATEWAY"
-        - uri: ${quarkus.fallback.url}
-          predicates:
-            - Path=/fallback/world
+            - Path=/fallback/api/{segments}
           filters:
             - StripPrefix=1
                   
