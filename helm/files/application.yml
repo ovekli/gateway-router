@@ -7,16 +7,43 @@ spring:
         enabled: true
         mode: POD
     gateway:
-      discovery:
-        locator:
-          enabled: true
+      httpclient:
+        connect-timeout: 250
       routes:
         - uri: ${quarkus.headless.url}
           predicates:
             - Path=/hello
+          filters:
+#            - name: Retry
+#              args:
+#                retries: 5
+#                statuses: BAD_GATEWAY
+#                methods: GET,POST
+#                backoff:
+#                  firstBackoff: 10ms
+#                  maxBackoff: 50ms
+#                  factor: 2
+#                  basedOnPreviousValue: false
+            - name: CircuitBreaker
+              args:
+                name: myCircuitBreaker
+                fallbackUri: forward:/fallback/hello
+                statusCodes:
+                  - "BAD_GATEWAY"
+        - uri: http://quarkus-test.test-headless.svc:8080
+          predicates:
+            - Path=/fallback/hello
+          filters:
+            - StripPrefix=1
+                  
 logging:
   level:
-    root: DEBUG
+    root: INFO
+    reactor:
+      netty:
+        http:
+          client:
+            HttpClientConnect: DEBUG
 
 quarkus:
   headless:
