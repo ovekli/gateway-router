@@ -12,6 +12,8 @@ spring:
       httpclient:
         connect-timeout: 250
       routes:
+
+        ## HELLO URI
         - uri: ${quarkus.headless.url}
           predicates:
             - Path=/hello
@@ -28,13 +30,30 @@ spring:
 #                  basedOnPreviousValue: false
             - name: CircuitBreaker
               args:
-                name: myCircuitBreaker
+                name: helloCircuitBreaker
                 fallbackUri: forward:/fallback/hello
                 statusCodes:
                   - "BAD_GATEWAY"
-        - uri: http://quarkus-test.quarkus-test.svc:8080
+        - uri: ${quarkus.fallback.url}
           predicates:
             - Path=/fallback/hello
+          filters:
+            - StripPrefix=1
+
+        ## WORLD URI
+        - uri: ${quarkus.headless.url}
+          predicates:
+            - Path=/world
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: worldCircuitBreaker
+                fallbackUri: forward:/fallback/world
+                statusCodes:
+                  - "BAD_GATEWAY"
+        - uri: ${quarkus.fallback.url}
+          predicates:
+            - Path=/fallback/world
           filters:
             - StripPrefix=1
                   
@@ -50,3 +69,5 @@ logging:
 quarkus:
   headless:
      url:  lb://quarkus-test-headless
+  fallback:
+     url: http://quarkus-test.quarkus-test.svc:8080
