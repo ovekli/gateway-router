@@ -14,18 +14,8 @@ spring:
       routes:
         - uri: ${quarkus.headless.url}
           predicates:
-            - Path=/api/{*segments}
+             - Path=/api/{*segments}
           filters:
-#            - name: Retry
-#              args:
-#                retries: 5
-#                statuses: BAD_GATEWAY
-#                methods: GET,POST
-#                backoff:
-#                  firstBackoff: 10ms
-#                  maxBackoff: 50ms
-#                  factor: 2
-#                  basedOnPreviousValue: false
             - name: CircuitBreaker
               args:
                 name: helloCircuitBreaker
@@ -37,6 +27,16 @@ spring:
             - Path=/fallback/api/{segments}
           filters:
             - StripPrefix=1
+            - name: Retry
+              args:
+                retries: 5
+                statuses: BAD_GATEWAY
+                methods: GET,POST
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
                   
 logging:
   level:
