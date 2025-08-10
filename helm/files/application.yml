@@ -18,7 +18,7 @@ spring:
           filters:
             - name: CircuitBreaker
               args:
-                name: helloCircuitBreaker
+                name: apiCircuitBreaker
                 fallbackUri: forward:/fallback/api/{segments}
                 statusCodes:
                   - "BAD_GATEWAY"
