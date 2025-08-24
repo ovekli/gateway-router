@@ -24,7 +24,7 @@ spring:
                   - "BAD_GATEWAY"
         - uri: ${quarkus.fallback.url}
           predicates:
-            - Path=/fallback/api/{segments}
+            - Path=/fallback/api/**
           filters:
             - StripPrefix=1
             - name: Retry
